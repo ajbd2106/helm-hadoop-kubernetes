@@ -3,14 +3,18 @@ kind: Service
 metadata:
   name: hdfs-datanode
   labels:
-    component: hdfs-datanode
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Worker.Component }}"
 spec:
   ports:
   - port: {{ .Values.Worker.ServicePort }}
     name: {{ .Values.Worker.PortName }}
-  clusterIP: None
   selector:
-    component: {{ .Values.Worker.Component }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Worker.Component }}"
 
 ---
 apiVersion: apps/v1beta1
@@ -18,15 +22,25 @@ kind: StatefulSet
 metadata:
   name: hdfs-datanode
   labels:
-    component: hdfs-datanode
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Worker.Component }}"
 spec:
   serviceName: "{{ .Values.Worker.Component }}"
   replicas: {{ default 1 .Values.Worker.Replicas }}
+    strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{ .Release.Name }}-{{ .Values.Worker.Component }}"
   template:
     metadata:
       labels:
+        heritage: {{ .Release.Service | quote }}
+        release: {{ .Release.Name | quote }}
         chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        component: {{ .Values.Worker.Component }}
+        component: "{{ .Release.Name }}-{{ .Values.Worker.Component }}"
     spec:
       containers:
         - name: {{ .Values.Worker.Component }}

@@ -3,14 +3,15 @@ kind: Service
 metadata:
   name: hdfs-namenode
   labels:
-    app: hdfs-namenode
-spec:
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
   ports:
   - port: {{ .Values.Master.ServicePort }}
     name: {{ .Values.Master.PortName }}
-  clusterIP: None
   selector:
-    component: {{ .Values.Master.Component }}
+   component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
 
 
 ---
@@ -20,13 +21,15 @@ kind: Service
 metadata:
   name: hdfs-webui
   labels:
-    app: hdfs-webui
+    heritage: {{ .Release.Service | quote }} 
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
 spec:
   ports:
   - port: {{ .Values.WebUi.ServicePort }}
-  clusterIP: None
   selector:
-    component: {{ .Values.Master.Component }}
+    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
   type: "LoadBalancer"
 ---
 apiVersion: apps/v1beta1
@@ -34,14 +37,25 @@ kind: StatefulSet
 metadata:
   name: hdfs-namenode
   labels:
-  component: hdfs-namenode
+    heritage: {{ .Release.Service | quote }}
+    release: {{ .Release.Name | quote }}
+    chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
 spec:
   serviceName: "{{ .Values.Master.Component }}"
   replicas: {{ default 1 .Values.Master.Replicas }}
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
   template:
     metadata:
       labels:
-       component: hdfs-namenode  
+        heritage: {{ .Release.Service | quote }} 
+        release: {{ .Release.Name | quote }}
+        chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
+        component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"  
     spec:
       terminationGracePeriodSeconds: 0
       containers:
@@ -51,7 +65,7 @@ spec:
           - name: CLUSTER_NAME
             value: hdfs-aia  
           ports:
-          - containerPort: {{ .Values.Master.ServicePort }}
+          - containerPort: {{ .Values.Master.ContainerPort }}
             name: {{ .Values.Master.PortName }}
       restartPolicy: Always     
 
