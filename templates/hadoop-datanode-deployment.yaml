@@ -3,14 +3,15 @@ kind: Service
 metadata:
   name: hdfs-datanode
   labels:
-   app: hdfs-datanode
+    app: hdfs-datanode
 spec:
   ports:
-    - port: {{ .Values.Worker.ServicePort }}
-      name: {{ .Values.Worker.PortName }}
-   clusterIP: None
+  - port: {{ .Values.Worker.ServicePort }}
+    name: {{ .Values.Worker.PortName }}
+  clusterIP: None
   selector:
-      app: {{ .Values.Worker.Component }}
+    app: {{ .Values.Worker.Component }}
+
 ---
 apiVersion: apps/v1beta1
 kind: StatefulSet

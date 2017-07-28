@@ -6,23 +6,26 @@ metadata:
     app: hdfs-namenode
 spec:
   ports:
-    - port: {{ .Values.Master.ServicePort }}
-      name: {{ .Values.Master.PortName }}
+  - port: {{ .Values.Master.ServicePort }}
+    name: {{ .Values.Master.PortName }}
   clusterIP: None
   selector:
-      app: {{ .Values.Master.Component }}
+    app: {{ .Values.Master.Component }}
+
 ---
+
 apiVersion: v1
 kind: Service
 metadata:
-  name: hadoop-webui
+  name: hdfs-webui
   labels:
-   app: hadoop-webui
+    app: hdfs-webui
 spec:
   ports:
-    - port: {{ .Values.WebUi.ServicePort }}
-selector:
-      app: {{ .Values.Master.Component }}
+  - port: {{ .Values.WebUi.ServicePort }}
+  clusterIP: None
+  selector:
+    app: {{ .Values.Master.Component }}
   type: "LoadBalancer"
 ---
 apiVersion: apps/v1beta1
