@@ -27,9 +27,8 @@ metadata:
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     component: "{{ .Release.Name }}-{{ .Values.Worker.Component }}"
 spec:
-  serviceName: "{{ .Values.Worker.Component }}"
   replicas: {{ default 1 .Values.Worker.Replicas }}
-    strategy:
+  strategy:
     type: RollingUpdate
   selector:
     matchLabels:
