@@ -3,14 +3,14 @@ kind: Service
 metadata:
   name: hdfs-datanode
   labels:
-    app: hdfs-datanode
+    component: hdfs-datanode
 spec:
   ports:
   - port: {{ .Values.Worker.ServicePort }}
     name: {{ .Values.Worker.PortName }}
   clusterIP: None
   selector:
-    app: {{ .Values.Worker.Component }}
+    component: {{ .Values.Worker.Component }}
 
 ---
 apiVersion: apps/v1beta1
@@ -18,7 +18,7 @@ kind: StatefulSet
 metadata:
   name: hdfs-datanode
   labels:
-    app: hdfs-datanode
+    component: hdfs-datanode
 spec:
   serviceName: "{{ .Values.Worker.Component }}"
   replicas: {{ default 1 .Values.Worker.Replicas }}
@@ -26,7 +26,7 @@ spec:
     metadata:
       labels:
         chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        app: {{ .Values.Worker.Component }}
+        component: {{ .Values.Worker.Component }}
     spec:
       containers:
         - name: {{ .Values.Worker.Component }}

@@ -10,7 +10,8 @@ spec:
     name: {{ .Values.Master.PortName }}
   clusterIP: None
   selector:
-    app: {{ .Values.Master.Component }}
+    component: {{ .Values.Master.Component }}
+
 
 ---
 
@@ -25,7 +26,7 @@ spec:
   - port: {{ .Values.WebUi.ServicePort }}
   clusterIP: None
   selector:
-    app: {{ .Values.Master.Component }}
+    component: {{ .Values.Master.Component }}
   type: "LoadBalancer"
 ---
 apiVersion: apps/v1beta1
@@ -33,14 +34,14 @@ kind: StatefulSet
 metadata:
   name: hdfs-namenode
   labels:
-  app: hdfs-namenode
+  component: hdfs-namenode
 spec:
   serviceName: "{{ .Values.Master.Component }}"
   replicas: {{ default 1 .Values.Master.Replicas }}
   template:
     metadata:
       labels:
-       app: hdfs-namenode  
+       component: hdfs-namenode  
     spec:
       terminationGracePeriodSeconds: 0
       containers:
