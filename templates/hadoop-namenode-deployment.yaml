@@ -7,9 +7,10 @@ metadata:
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
     component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
+spec:
   ports:
-  - port: {{ .Values.Master.ServicePort }}
-    name: {{ .Values.Master.PortName }}
+    - port: {{ .Values.Master.ServicePort }}
+      name: {{ .Values.Master.PortName }}
   selector:
    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
 
@@ -44,11 +45,6 @@ metadata:
 spec:
   serviceName: "{{ .Values.Master.Component }}"
   replicas: {{ default 1 .Values.Master.Replicas }}
-  strategy:
-    type: RollingUpdate
-  selector:
-    matchLabels:
-      component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
   template:
     metadata:
       labels:
