@@ -5,7 +5,8 @@
 
 Master:
   Name: master
-  Image: "uhopper/hadoop-namenode:2.7.2"
+  Image: "uhopper/hadoop-namenode"
+  ImageTag: "2.7.2"
   Replicas: 1
   Component: "hdfs-namenode"
   Cpu: "100m"
@@ -23,7 +24,8 @@ WebUi:
 
 Worker:
   Name: worker
-  Image: "uhopper/hadoop-namenode:2.7.2"
+  Image: "uhopper/hadoop-datanode"
+  ImageTag: "2.7.2"
   Replicas: 3
   Component: "hdfs-datanode"
   Cpu: "100m"

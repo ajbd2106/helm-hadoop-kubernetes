@@ -6,13 +6,15 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
+    component: "{{ .Values.Master.Component }}"
 spec:
   ports:
     - port: {{ .Values.Master.ServicePort }}
       name: {{ .Values.Master.PortName }}
+      protocol: TCP
+  clusterIP: None
   selector:
-   component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
+   component: {{ .Values.Master.Component }}
 
 
 ---
@@ -25,12 +27,12 @@ metadata:
     heritage: {{ .Release.Service | quote }} 
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
+    component: "{{ .Values.Master.Component }}"
 spec:
   ports:
   - port: {{ .Values.WebUi.ServicePort }}
   selector:
-    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
+    component: {{ .Values.Master.Component }}
   type: "LoadBalancer"
 ---
 apiVersion: apps/v1beta1
@@ -41,7 +43,7 @@ metadata:
     heritage: {{ .Release.Service | quote }}
     release: {{ .Release.Name | quote }}
     chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-    component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"
+    component: "{{ .Values.Master.Component }}"
 spec:
   serviceName: "{{ .Values.Master.Component }}"
   replicas: {{ default 1 .Values.Master.Replicas }}
@@ -51,15 +53,19 @@ spec:
         heritage: {{ .Release.Service | quote }} 
         release: {{ .Release.Name | quote }}
         chart: "{{ .Chart.Name }}-{{ .Chart.Version }}"
-        component: "{{ .Release.Name }}-{{ .Values.Master.Component }}"  
+        component: "{{ .Values.Master.Component }}"  
     spec:
       terminationGracePeriodSeconds: 0
       containers:
-        - name: {{ .Values.Master.Component }}
-          image: {{ .Values.Master.Image }}
+        - name: hdfs-namenode
+          image: {{ .Values.Master.Image }}:{{ .Values.Master.ImageTag }}
           env:
           - name: CLUSTER_NAME
-            value: hdfs-aia  
+            value: hdfs-k8s
+          resources:
+            requests:
+              cpu: "{{ .Values.Master.Cpu }}"
+              memory: "{{ .Values.Master.Memory }}"
           ports:
           - containerPort: {{ .Values.Master.ContainerPort }}
             name: {{ .Values.Master.PortName }}
